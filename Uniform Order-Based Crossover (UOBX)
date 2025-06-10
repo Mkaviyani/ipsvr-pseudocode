@@ -1,0 +1,41 @@
+
+
+\begin{algorithm}
+\caption{Uniform Order-Based Crossover (UOBX)}\label{alg:UOBX}
+\begin{algorithmic}[1]
+\State \(n\): The length of each chromosome
+\State \textbf{Input:} Two parent permutations \(P_1, P_2\), and a randomly generated binary template \(T\) of length \(n\)
+\State \textbf{Output:} Two offspring permutations \(C_1, C_2\)
+\State Initialize \(C_1\) and \(C_2\) as empty-gene sequences of length \(n\)
+
+\hspace{-1em}\Comment{Step 1: Copy genes based on the binary template}
+\For{\(i = 1\) to \(n\)}
+    \If{\(T[i] = 1\)}
+        \State \(C_1[i] \gets P_1[i]\)
+    \Else
+        \State \(C_2[i] \gets P_2[i]\)
+    \EndIf
+\EndFor
+
+\hspace{-2em}\Comment{Step 2: Fill missing positions with remaining genes}
+\For{\textbf{each empty position} \(j\) in \(C_1\)}
+    \For{\(i = 1\) to \(n\)}
+        \If{\(P_2[i]\) is not already in \(C_1\)}
+            \State \(C_1[j] \gets P_2[i]\) \Comment{Insert missing gene from \(P_2\) in order}
+            \State \textbf{Break}
+        \EndIf
+    \EndFor
+\EndFor
+
+\For{\textbf{each empty position} \(j\) in \(C_2\)}
+    \For{\(i = 1\) to \(n\)}
+        \If{\(P_1[i]\) is not already in \(C_2\)}
+            \State \(C_2[j] \gets P_1[i]\) \Comment{Insert missing gene from \(P_1\) in order}
+            \State \textbf{Break}
+        \EndIf
+    \EndFor
+\EndFor
+
+\State \textbf{Return:} \(C_1\) and \(C_2\)
+\end{algorithmic}
+\end{algorithm}
