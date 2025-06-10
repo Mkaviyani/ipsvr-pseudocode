@@ -1,0 +1,53 @@
+\begin{algorithm}[H]
+\caption{Adaptive Intentional Delay- and MLOR-Aware Local Search}
+\label{alg:delay_mutation}
+\begin{algorithmic}[1]
+\Require Population of solutions with job sequences; time thresholds ($H \& h$); time unit ($\beta$); SL; mutation probability ($\textit{DeMuPro}$)
+\Ensure Updated intentional delay values based on earliness/lateness severity and MLOR feasibility
+
+\For{each individual $p \in \{1, \dots, \text{PopSize}\}$}
+    \For{each gene $g \in \text{Individual}[p].\text{Gene}$}
+        \If{$\text{random()} < \textit{DeMuPro}$}
+            \State $j \gets g.\text{CustomerIndex}$, $o \gets g.\text{OrderIndex}$
+            \State $\textit{found} \gets \textbf{false}$
+
+            \For{each vehicle $v \in \{1, \dots, \text{NoOfVehicles}\}$}
+                \If{$\textit{found}$} \textbf{break} \EndIf
+
+                \For{each delivery $d \in \text{Vehicles}[v].\text{Delivery}$}
+                    \If{$d.\text{CustomerId} = j$ \textbf{and} $d.\text{OrderId} = o$}
+                        \State $\delta \gets g.\text{DelayTime}$
+                        \State Compute $TimeDiff \gets \text{SL} - (\text{gene.DeliveryTime} - \text{gene.JobCompTime})$
+
+                        \If{$d.\text{Earliness} > 0$ \textbf{and} $TimeDiff > \text{MLOR} + \beta$}
+                            \State Determine adaptive $\lambda$:
+                            \Statex \hspace{1em} $\lambda \gets
+                            \begin{cases}
+                                0.8, & \text{if } d.\text{Earliness} > H \\
+                                0.5, & \text{if } d.\text{Earliness} > h \\
+                                0.3, & \text{otherwise}
+                            \end{cases}$
+                            \State $g.\text{DelayTime} \gets \delta + \lambda \cdot d.\text{Earliness}$
+
+                        \ElsIf{$d.\text{Lateness} > 0$ \textbf{and} $TimeDiff > \text{MLOR} + \beta$}
+                            \State Determine adaptive $\lambda$:
+                            \Statex \hspace{1em} $\lambda \gets
+                            \begin{cases}
+                                0.8, & \text{if } d.\text{Lateness} > H \\
+                                0.5, & \text{if } d.\text{Lateness} > h \\
+                                0.3, & \text{otherwise}
+                            \end{cases}$
+                            \State $g.\text{DelayTime} \gets \max(0, \delta - \lambda \cdot d.\text{Lateness})$
+                        \EndIf
+
+                        \State $\textit{found} \gets \textbf{true}$
+                        \State \textbf{break}
+                    \EndIf
+                \EndFor
+            \EndFor
+        \EndIf
+    \EndFor
+\EndFor
+\State \Return Updated population
+\end{algorithmic}
+\end{algorithm}
