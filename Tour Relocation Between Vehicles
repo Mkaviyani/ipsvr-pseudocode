@@ -1,0 +1,27 @@
+\begin{algorithm}[H]
+\caption{Tour Relocation Between Vehicles}
+\label{alg:relocate_tour_between_vehicles}
+\begin{algorithmic}[1]
+\Require Source vehicle $V_1$, destination vehicle $V_2$
+\Ensure Improved routing cost if relocating a tour respects MLOR
+\State $improved \gets \textbf{false}$
+\State $lastTour \gets$ last tour in $V_1.th$
+\State $batchSize \gets lastTour.totalLoad$
+
+\If{$batchSize > V_2.Capacity$}
+    \State \Return \textbf{false} \Comment{Relocation infeasible due to capacity limit}
+\Else
+\State Compute original total cost ($OTC$) of $V_1$ and $V_2$
+
+\State Temporarily move $lastTour$ from $V_1$ to $V_2$
+\State $newCost \gets$ Evaluate$(V_1, V_2)$
+\EndIf
+\If{$newCost < OTC$ \textbf{and} MLOR compliance}
+    \State $improved \gets \textbf{true}$
+\Else
+    \State Move $lastTour$ back to $V_1$ \Comment{Revert relocation}
+\EndIf
+
+\State \Return $improved$
+\end{algorithmic}
+\end{algorithm}
