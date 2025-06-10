@@ -1,0 +1,18 @@
+\begin{algorithm}[H]
+\caption{Survivor Selection with Biased Fitness Function}
+\label{alg:survivor_selection}
+\begin{algorithmic}[1]
+\Require Population $P$, offspring population $O$, population size $X$, biased fitness function $BFF$
+\Ensure Next generation population $P'$
+\State $P_\text{combined} \gets P \cup O$
+\For{each individual $P \in P_\text{combined}$}
+    \State Get fitness $F(P)$
+    \State Get biased fitness $BFF(P)$
+\EndFor
+\State Sort $P_\text{combined}$ by $F(P)$ in ascending order
+\State Resolve ties by sorting individuals with the same $f(x)$ by $BFF(P)$ in ascending order
+\State Select the top $X$ individuals from $P_\text{combined}$
+\State $P' \gets \text{selected individuals}$
+\State \Return $P'$
+\end{algorithmic}
+\end{algorithm}
