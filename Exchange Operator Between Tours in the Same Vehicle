@@ -1,0 +1,43 @@
+\begin{algorithm}[H]
+\caption{Exchange Operator Between Tours in the Same Vehicle}
+\label{alg:apply_exchange_same_vehicle}
+\begin{algorithmic}[1]
+\Require Vehicle $v$ with tour history ($th$), parameter $a$ (percentage for top-ranked deliveries)
+\Ensure Improved vehicle routes by exchanging deliveries between tours while respecting MLOR
+\State $improved \gets \textbf{false}$
+\For{each pair of tours $(T_1, T_2)$ in $v.th$}
+    \State $D_1 \gets T_1.deliveries$
+    \State $D_2 \gets T_2.deliveries$
+
+    \State Initialize $earlinessSorted \gets$ deliveries in $D_1$ with earliness $>0$, sorted descending
+    \State Initialize $latenessSorted \gets$ deliveries in $D_2$ with lateness $>0$, sorted descending
+
+    \State $limit_1 \gets \lceil a \times |earlinessSorted| \rceil$
+    \State $limit_2 \gets \lceil a \times |latenessSorted| \rceil$
+
+    \For{each $i$ in top $limit_1$ of $earlinessSorted$}
+        \For{each $j$ in top $limit_2$ of $latenessSorted$}
+            \If{swapping $D_1[i]$ and $D_2[j]$ respects vehicle capacity constraints}
+                \State Compute original costs $originalCost_1$, $originalCost_2$
+                \State Swap $D_1[i]$ and $D_2[j]$
+                \State $improvedT_1 \gets$ Evaluate$(T_1)$
+                \State $improvedT_2 \gets$ Evaluate$(T_2)$
+
+                \If{no improvement \textbf{or} MLOR violation}
+                    \State Swap back $D_1[i]$ and $D_2[j]$
+                    \State \textbf{continue}
+                \EndIf
+
+                \State Compute new costs $newCost_1$, $newCost_2$
+                \If{$newCost_1 + newCost_2 < originalCost_1 + originalCost_2$ \textbf{and} MLOR compliance}
+                    \State $improved \gets \textbf{true}$ \Comment{Accept exchange}
+                \Else
+                    \State Swap back $D_1[i]$ and $D_2[j]$
+                \EndIf
+            \EndIf
+        \EndFor
+    \EndFor
+\EndFor
+\State \Return $improved$
+\end{algorithmic}
+\end{algorithm}
