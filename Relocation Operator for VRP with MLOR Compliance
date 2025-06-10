@@ -1,0 +1,30 @@
+\begin{algorithm}[H]
+\caption{Relocation Operator for VRP with MLOR Compliance}
+\label{alg:apply_relocation}
+\begin{algorithmic}[1]
+\Require Vehicle $v$ with its tour history ($th$)
+\Ensure Locally improved vehicle routes while ensuring MLOR feasibility
+\State $improved \gets \textbf{false}$
+\For{each tour $T$ in $v.th$}
+    \State $D \gets T.deliveries$ \Comment{Retrieve the delivery sequence for the tour}
+    \For{each customer position $i$ in $D$}
+        \State $relocated \gets D[i]$
+        \State Remove $D[i]$ from the tour
+        \State $localImprovement \gets \textbf{false}$
+        \State $bestPosition \gets i$ \Comment{Default to original position}
+        \For{each position $j$ in $[0, |D|]$}
+            \If{$j == i$} \textbf{continue} \EndIf
+            \State Insert $relocated$ at position $j$ in $D$
+            \If{Evaluate$(T)$ indicates cost improvement \textbf{and} MLOR compliance}
+                \State $improved \gets \textbf{true}$
+                \State $localImprovement \gets \textbf{true}$
+                \State $bestPosition \gets j$
+            \EndIf
+            \State Remove $relocated$ from position $j$ \Comment{Revert relocation for next test}
+        \EndFor
+        \State Insert $relocated$ at $bestPosition$ in $D$ \Comment{Finalize best feasible position}
+    \EndFor
+\EndFor
+\State \Return $improved$
+\end{algorithmic}
+\end{algorithm}
