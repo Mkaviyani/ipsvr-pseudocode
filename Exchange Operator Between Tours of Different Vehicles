@@ -1,0 +1,47 @@
+\begin{algorithm}[H]
+\caption{Exchange Operator Between Tours of Different Vehicles}
+\label{alg:apply_exchange_different_vehicle}
+\begin{algorithmic}[1]
+\Require Vehicles $v_1, v_2$ with tour histories ($th$), parameter $a$ (percentage for top-ranked deliveries)
+\Ensure Improved vehicle routes through inter-vehicle exchange while respecting MLOR
+\State $improved \gets \textbf{false}$
+
+\For{each tour $T_1$ in $v_1.th$}
+    \State $D_1 \gets T_1.deliveries$
+    \State $departureTime_1 \gets$ departure time of $T_1$
+
+    \For{each tour $T_2$ in $v_2.th$ within time proximity of $T_1$}
+        \State $D_2 \gets T_2.deliveries$
+        \State Initialize $penalties_1$ and $penalties_2$ as descending-ordered delivery penalties in $D_1$ and $D_2$, respectively
+        \State $limit_1 \gets \lceil a \times |penalties_1| \rceil$
+        \State $limit_2 \gets \lceil a \times |penalties_2| \rceil$
+
+        \For{each $i$ in top $limit_1$ of $penalties_1$}
+            \For{each $j$ in top $limit_2$ of $penalties_2$}
+                \If{swapping $D_1[i]$ and $D_2[j]$ violates vehicle capacity or $completionTime_2 > departureTime_1$ or $completionTime_1 > departureTime_2$}
+                    \State \textbf{continue}
+                \EndIf
+
+                \State Compute original costs $originalCost_1$, $originalCost_2$
+                \State Swap $D_1[i]$ and $D_2[j]$
+                \State Evaluate new tours $improvedT_1 \gets$ Evaluate$(T_1)$ and $improvedT_2 \gets$ Evaluate$(T_2)$
+
+                \If{no improvement \textbf{or} MLOR violation}
+                    \State Swap back $D_1[i]$ and $D_2[j]$
+                    \State \textbf{continue}
+                \EndIf
+
+                \State Compute new total cost $newTotalCost$
+                \If{$newTotalCost < originalCost_1 + originalCost_2$}
+                    \State $improved \gets \textbf{true}$ \Comment{Accept exchange}
+                    \State Update vehicle loads
+                \Else
+                    \State Swap back $D_1[i]$ and $D_2[j]$
+                \EndIf
+            \EndFor
+        \EndFor
+    \EndFor
+\EndFor
+\State \Return $improved$
+\end{algorithmic}
+\end{algorithm}
