@@ -1,0 +1,27 @@
+\begin{algorithm}
+\caption{Precedence Preservative Crossover (PPX)}\label{alg:PPX}
+\begin{algorithmic}[2]
+\State \(n\): The length of each chromosome
+\State \textbf{Input:} Two parent permutations \(P_1, P_2\), and a randomly generated list \(R\) of length \(n\) with values \(1\) or \(2\)
+\State \textbf{Output:} One offspring permutation \(C\)
+\State Initialize \(C\) as an empty-gene sequence of length \(n\)
+\State Initialize copies of the parent permutations \(P_1' \gets P_1\), \(P_2' \gets P_2\)
+
+\hspace{-2em}\Comment{Fill the offspring based on the random list}
+\For{\(i = 1\) to \(n\)}
+    \If{\(R[i] = 1\)}
+        \State Select the first available gene \(g\) from \(P_1'\)
+        \State Insert \(g\) into the available position in \(C\)
+        \State Remove \(g\) from \(P_2'\)
+        \State Remove \(g\) from \(P_1'\)
+    \Else
+        \State Select the first available gene \(g\) from \(P_2'\)
+        \State Insert \(g\) into the available position in \(C\)
+        \State Remove \(g\) from \(P_1'\)
+        \State Remove \(g\) from \(P_2'\)
+    \EndIf
+\EndFor
+
+\State \textbf{Return:} \(C\)
+\end{algorithmic}
+\end{algorithm}
