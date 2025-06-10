@@ -1,0 +1,37 @@
+\begin{algorithm}[H]
+\caption{Swap Operator Based on Due Date Similarity}
+\label{alg:swap_mutation}
+\begin{algorithmic}[1]
+\Require $PopSize$; $SwapMuPro$; $Individuals$; $TV$ \Comment{Due date tolerance (hours)}
+\Ensure Updated job sequences respecting MLOR feasibility through due date proximity
+
+\For{each individual $p$ in $[0, PopSize)$}
+    \State $genes \gets Individuals[p].Gene$
+
+    \For{each job index $i$ in $[0, |genes|)$}
+        \If{random() $< SwapMuPro$}
+            \State $job_i \gets genes[i]$
+            \State $dueDate_1 \gets job_i.dueDate$
+            \State Initialize empty $similarJobs$ list
+
+            \For{each job index $j$ in $[0, |genes|)$}
+                \If{$j == i$} \textbf{continue} \EndIf
+                \State $job_j \gets genes[j]$
+                \State $dueDate_2 \gets job_j.dueDate$
+                \State $dueDateDiff \gets |mktime(dueDate_1) - mktime(dueDate_2)| / 3600$
+
+                \If{$dueDateDiff \leq TV$}
+                    \State Add $j$ to $similarJobs$
+                \EndIf
+            \EndFor
+
+            \If{$similarJobs$ is not empty}
+                \State $selectedJobIndex \gets$ Random choice from $similarJobs$
+                \State Swap $genes[i]$ and $genes[selectedJobIndex]$
+            \EndIf
+        \EndIf
+    \EndFor
+\EndFor
+\State \Return Updated Population
+\end{algorithmic}
+\end{algorithm}
