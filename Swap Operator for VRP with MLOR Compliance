@@ -1,0 +1,21 @@
+\begin{algorithm}[H]
+\caption{Swap Operator for VRP with MLOR Compliance}
+\label{alg:apply_swap}
+\begin{algorithmic}[1]
+\Require Vehicle $v$ with its tour history ($th$)
+\Ensure Locally improved vehicle routes respecting MLOR
+\State $improved \gets \textbf{false}$
+\For{each tour $T$ in $v.th$}
+    \State $D \gets T.deliveries$ \Comment{Retrieve the delivery sequence for the tour}
+    \For{each pair $(i, j)$ where $0 \leq i < j < |D|$}
+        \State Swap $D[i]$ and $D[j]$
+        \If{Evaluate$(T)$ indicates cost improvement \textbf{and} MLOR compliance}
+            \State $improved \gets \textbf{true}$
+        \Else
+            \State Swap back $D[i]$ and $D[j]$ \Comment{Revert if no gain or MLOR violation}
+        \EndIf
+    \EndFor
+\EndFor
+\State \Return $improved$
+\end{algorithmic}
+\end{algorithm}
