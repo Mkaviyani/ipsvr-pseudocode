@@ -1,0 +1,45 @@
+\begin{algorithm}[H]
+\caption{Lateness- and MLOR-Aware Local Search}
+\label{alg:lateness_mutation}
+\begin{algorithmic}[1]
+\Require Population of solutions with job sequences; shelf-life $\text{SL}$; time unit $\beta$
+\Ensure Updated job sequences addressing earliness/lateness penalties while respecting MLOR
+
+\For{each individual $p \in \{1, \dots, \text{PopSize}\}$}
+    \State Initialize $penaltyData \gets \emptyset$
+
+    \For{each delivery $d$ in Individual[$p$].vehicles}
+        \If{$d.\text{Lateness} > 0$}
+            \State Append $(d.\text{CustomerId}, d.\text{OrderId}, d.\text{Penalty}, \text{True})$ to $penaltyData$
+        \ElsIf{$d.\text{Earliness} > 0$}
+            \State Append $(d.\text{CustomerId}, d.\text{OrderId}, d.\text{Penalty}, \text{False})$ to $penaltyData$
+        \EndIf
+    \EndFor
+
+    \For{each $(j, o, \pi, \text{isLateness}) \in penaltyData$}
+        \State Locate gene $g$ for job $(j, o)$ in Individual[$p$].Gene
+        \State $currentPos \gets$ index of $g$
+
+        \If{job $(j, o)$ has not been moved yet}
+            \State \textbf{Check intentional delay:}
+            \If{$g.\text{DelayTime} > 0$}
+                \State \textbf{continue} \Comment{Skip this job; delay will be handled by delay local search}
+            \EndIf
+
+            \State Compute $TimeDiff \gets \text{SL} - (\text{gene.DeliveryTime} - \text{gene.JobCompTime})$
+
+            \If{$\text{isLateness}$ and $TimeDiff > \text{MLOR} + \beta$}
+                \State $targetPos \gets \max(0, currentPos - \delta)$ \Comment{Advance job}
+            \ElsIf{$\neg \text{isLateness}$ and $|TimeDiff| > \text{MLOR} + \beta$}
+                \State $targetPos \gets \min(|\text{Gene}| - 1, currentPos + \delta)$ \Comment{Delay job slightly}
+            \Else
+                \State \textbf{continue} \Comment{No adjustment needed}
+            \EndIf
+
+            \State Relocate job $(j, o)$ to $targetPos$ in Individual[$p$].Gene
+        \EndIf
+    \EndFor
+\EndFor
+\State \Return Updated population
+\end{algorithmic}
+\end{algorithm}
